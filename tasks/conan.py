@@ -171,7 +171,20 @@ def package(ctx, username=package_username(), force_upload=False):
     base_profile_name=None
     if sys.platform == 'linux':
         base_profile_name="devtoolset-7"
+
     with tools.environment_append(tools_deps_env_info()):
+        conan_api, client_cache, user_io = Conan.factory(interactive=False)
+        leptonica = ConanFileReference.loads('leptonica/1.76.0@bincrafters/stable')
+        for settings, options, env_vars, build_requires, reference in builder.items:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                conan_api.install_reference(reference=leptonica,
+                                            settings=options_list(settings),
+                                            options=options_list(options),
+                                            env=env_vars,
+                                            build=[leptonica.name],
+                                            profile_name=base_profile_name,
+                                            install_folder=tmpdir)
+
         builder.run(base_profile_name=base_profile_name)
 
 def remove_remote_refs(conan_api):
