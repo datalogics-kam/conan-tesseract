@@ -24,7 +24,7 @@ PROFILE_URL = f'{DL_ARTIFACTORY}/webapp/#/profile'
 UPLOAD_REMOTE = 'conan-local'
 UPLOAD_DEPENDENCIES_REMOTE = 'conan-ext'
 REDIRECT_REMOTE = 'conan-redirect'
-STABLE_BRANCH_PATTERN = 'release-.*'
+STABLE_BRANCH_PATTERN = 'dl/stable/.*'
 STABLE_USERNAME = 'datalogics'
 PASSWORD_MESSAGE=f'''\
 Your encrypted password is required to log you in to Artifactory.
