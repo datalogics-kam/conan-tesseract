@@ -181,7 +181,7 @@ def package(ctx, username=package_username(), force_upload=False):
                                             settings=options_list(settings),
                                             options=options_list(options),
                                             env=env_vars,
-                                            build=[leptonica.name],
+                                            build=[leptonica.name, "missing"],
                                             profile_name=base_profile_name,
                                             install_folder=tmpdir)
 
