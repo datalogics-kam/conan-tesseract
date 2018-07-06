@@ -132,8 +132,9 @@ def package_username():
 
     return getpass.getuser()
 
-def tools_deps_env_info():
-    conan_api, client_cache, user_io = Conan.factory(interactive=False)
+def tools_deps_env_info(conan_api=None):
+    if conan_api is None:
+        conan_api, _, _ = Conan.factory(interactive=False)
     conan_api.install('build_tools', install_folder='build_tools/build')
     with open("build_tools/build/conanbuildinfo.json") as f:
         conanbuildinfo = json.load(f)
@@ -303,17 +304,18 @@ def install_all_configurations(conan_api, client_cache):
     if sys.platform == 'linux':
         base_profile_name = "devtoolset-7"
     # Enumerate over the settings that we would have built for packaging
-    with conan_redirect_removed(conan_api):
-        for settings, options, env_vars, build_requires, reference in builder.items:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                conan_api.install(path=".",
-                                  settings=options_list(settings),
-                                  options=options_list(options),
-                                  env=env_vars,
-                                  build=["missing"],
-                                  profile_name=base_profile_name,
-                                  generators=False,
-                                  install_folder=tmpdir)
+    with tools.environment_append(tools_deps_env_info(conan_api)):
+        with conan_redirect_removed(conan_api):
+            for settings, options, env_vars, build_requires, reference in builder.items:
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    conan_api.install(path=".",
+                                    settings=options_list(settings),
+                                    options=options_list(options),
+                                    env=env_vars,
+                                    build=["missing"],
+                                    profile_name=base_profile_name,
+                                    generators=False,
+                                    install_folder=tmpdir)
 
 @task(pre=[login])
 def copy_dependencies(ctx):
