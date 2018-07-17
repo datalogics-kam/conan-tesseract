@@ -24,14 +24,16 @@ config:
         multi: false
 
         # Regex that indicates a release branch
-        stable_branch_pattern: release-.*
+        stable_branch_pattern: dl/stable/.*
 
         # Which dependencies are built
         build:
             - missing
 
         # If these patterns match a dependency package reference, that package is forced to be built.
-        force_build_patterns: []
+        # leptonica has a packaging fault which requires it to be built locally
+        force_build_patterns:
+            - leptonica/*
 
         # CMake project generator
         # Set this based on the build system the project uses
