@@ -1,6 +1,6 @@
 [[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
+url = "http://artifactory.dlogics.com:8081/artifactory/api/pypi/pypi/simple"
+verify_ssl = false
 name = "pypi"
 
 [packages]
@@ -10,7 +10,7 @@ conan_package_tools = ">=0.17.3,<0.18"
 # is a reminder of how to get the package tools from a branch of a git repo.
 # conan_package_tools = {git = "ssh://git@github.com/datalogics-kam/conan-package-tools.git", ref = "use-cached-auth"}
 invoke = "<0.23,>=0.22.1"
-requests = ">=2.18.4,<3.0"
+dl-conan-build-tools = "==0.1.0"
 
 [dev-packages]
 
