@@ -32,6 +32,9 @@ class TesseractConan(ConanFile):
                   os.path.join(self.source_subfolder, "CMakeListsOriginal.txt"))
         shutil.copy("CMakeLists.txt",
                     os.path.join(self.source_subfolder, "CMakeLists.txt"))
+        tools.replace_in_file(os.path.join(self.source_subfolder, "vs2010", "port", "vcsversion.h"),
+                              "#define",
+                              "// #define")
 
     def config_options(self):
         if self.settings.os == "Windows":
