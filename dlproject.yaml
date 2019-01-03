@@ -74,6 +74,7 @@ config:
     #     Lists are appended
 
     macos:
+        profile: apple-clang-9.1-macos-10.7
 
     redhat:
         # Use the RedHat Devtoolset 7 on Linux
@@ -93,6 +94,7 @@ config:
             - boost_build
 
     windows:
+        profile: profile: visual-studio-14
         cmake_generator: Visual Studio 12 2013 Win64
         multi: true
 
