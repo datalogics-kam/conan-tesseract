@@ -11,6 +11,7 @@ class TesseractConan(ConanFile):
     version = "3.05.01"
     description = "Tesseract Open Source OCR Engine"
     url = "http://github.com/bincrafters/conan-tesseract"
+    author = "Bincrafters <bincrafters@gmail.com>"
     license = "Apache-2.0"
     homepage = "https://github.com/tesseract-ocr/tesseract"
     exports = ["LICENSE.md"]
@@ -20,19 +21,19 @@ class TesseractConan(ConanFile):
     options = {"shared": [True, False],
                "fPIC": [True, False],
                "with_training": [True, False]}
-    default_options = "shared=False", "fPIC=True", "with_training=False"
-    source_subfolder = "source_subfolder"
+    default_options = {'shared': False, 'fPIC': True, 'with_training': False}
+    _source_subfolder = "source_subfolder"
 
     requires = "leptonica/1.76.0@bincrafters/stable"
 
     def source(self):
         tools.get("https://github.com/tesseract-ocr/tesseract/archive/%s.tar.gz" % self.version)
-        os.rename("tesseract-" + self.version, self.source_subfolder)
-        os.rename(os.path.join(self.source_subfolder, "CMakeLists.txt"),
-                  os.path.join(self.source_subfolder, "CMakeListsOriginal.txt"))
+        os.rename("tesseract-" + self.version, self._source_subfolder)
+        os.rename(os.path.join(self._source_subfolder, "CMakeLists.txt"),
+                  os.path.join(self._source_subfolder, "CMakeListsOriginal.txt"))
         shutil.copy("CMakeLists.txt",
-                    os.path.join(self.source_subfolder, "CMakeLists.txt"))
-        tools.replace_in_file(os.path.join(self.source_subfolder, "vs2010", "port", "vcsversion.h"),
+                    os.path.join(self._source_subfolder, "CMakeLists.txt"))
+        tools.replace_in_file(os.path.join(self._source_subfolder, "vs2010", "port", "vcsversion.h"),
                               "#define",
                               "// #define")
 
@@ -51,7 +52,7 @@ class TesseractConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.definitions['BUILD_TRAINING_TOOLS'] = False
+        cmake.definitions['BUILD_TRAINING_TOOLS'] = self.options.with_training
         cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
         cmake.definitions["STATIC"] = not self.options.shared
 
@@ -67,7 +68,7 @@ class TesseractConan(ConanFile):
         # if static leptonica used with pkg-config, tesseract must use Leptonica_STATIC_LIBRARIES
         # which use static dependencies like jpeg, png etc provided by lept.pc
         if not self.options['leptonica'].shared and use_pkg_config:
-            tools.replace_in_file(os.path.join(self.source_subfolder, "CMakeListsOriginal.txt"),
+            tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeListsOriginal.txt"),
                                   "target_link_libraries       (libtesseract ${Leptonica_LIBRARIES})",
                                   "target_link_libraries       (libtesseract ${Leptonica_STATIC_LIBRARIES})")
 
@@ -75,7 +76,7 @@ class TesseractConan(ConanFile):
             # upstream bug: output name is not substituted for tesseract.pc
             # fixed in master but still an issue for stable
             tools.replace_in_file(
-                os.path.join(self.source_subfolder, "CMakeListsOriginal.txt"),
+                os.path.join(self._source_subfolder, "CMakeListsOriginal.txt"),
                 "set_target_properties           (libtesseract PROPERTIES DEBUG_OUTPUT_NAME tesseract${VERSION_MAJOR}${VERSION_MINOR}d)",
                 "set_target_properties           (libtesseract PROPERTIES DEBUG_OUTPUT_NAME tesseract${VERSION_MAJOR}${VERSION_MINOR}d)\n"
                 "else()\n"
@@ -85,9 +86,10 @@ class TesseractConan(ConanFile):
             cmake.definitions['Leptonica_DIR'] = self.deps_cpp_info['leptonica'].rootpath
 
         with tools.environment_append({'PKG_CONFIG_PATH': self.build_folder}) if use_pkg_config else tools.no_op():
-            cmake.configure(source_folder=self.source_subfolder)
+            cmake.configure(source_folder=self._source_subfolder)
             cmake.build()
             cmake.install()
+            cmake.patch_config_paths()
 
         self._fix_absolute_paths()
 
@@ -102,20 +104,8 @@ class TesseractConan(ConanFile):
                                   'Libs.private:',
                                   'Libs.private: ' + ' '.join(libs_private))
 
-        # Fix cmake config file with absolute path
-        path = os.path.join(self.package_folder, 'cmake', 'TesseractConfig.cmake')
-        tools.replace_in_file(path,
-                              "# Provide the include directories to the caller",
-                              'get_filename_component(PACKAGE_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)\n'
-                              'get_filename_component(PACKAGE_PREFIX "${PACKAGE_PREFIX}" PATH)')
-        if self.settings.os == 'Windows':
-            from_str = self.package_folder.replace('\\', '/')
-        else:
-            from_str = self.package_folder
-        tools.replace_in_file(path, from_str, '${PACKAGE_PREFIX}')
-
     def package(self):
-        self.copy("LICENSE", src=self.source_subfolder, dst="licenses", ignore_case=True, keep_path=False)
+        self.copy("LICENSE", src=self._source_subfolder, dst="licenses", ignore_case=True, keep_path=False)
         # remove man pages
         shutil.rmtree(os.path.join(self.package_folder, 'share', 'man'), ignore_errors=True)
         # remove binaries
