@@ -45,7 +45,7 @@ config:
                 - x86_64
             apple_clang_versions:
                 # quirk: must be string
-                - "9.1"
+                - "10.0"
             visual_versions:
                 # Visual Studio
                 # quirk: must be integer
@@ -74,7 +74,7 @@ config:
     #     Lists are appended
 
     macos:
-        profile: apple-clang-9.1-macos-10.7
+        profile: apple-clang-10.0-macos-10.9
 
     redhat:
         # Use the RedHat Devtoolset 7 on Linux
@@ -94,7 +94,7 @@ config:
             - boost_build
 
     windows:
-        profile: profile: visual-studio-14
+        profile: visual-studio-14
         cmake_generator: Visual Studio 12 2013 Win64
         multi: true
 
