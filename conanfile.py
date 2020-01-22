@@ -8,7 +8,7 @@ from conans import ConanFile, CMake, tools
 
 class TesseractConan(ConanFile):
     name = "tesseract"
-    version = "3.05.01"
+    version = "3.05.02"
     description = "Tesseract Open Source OCR Engine"
     url = "http://github.com/bincrafters/conan-tesseract"
     author = "Bincrafters <bincrafters@gmail.com>"
