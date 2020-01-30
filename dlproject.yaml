@@ -4,17 +4,10 @@ config:
     global:
         # Base configurations, may be overridden by platform
 
-        # Conan remotes
-        # Simple strings are local to the Datalogics Artifactory
-        # Full URLs access repositories outside DL
-        # These remotes are automatically added to the user's config when conan.setup-remotes or conan.login runs
-        # These are also searched in the order given
-        remotes:
-            - conan-redirect: conan-redirect
-            - conan-ext: conan-ext
-            - conan-local: conan-local
-            - conan-center: https://conan.bintray.com
-            - bincrafters: https://api.bintray.com/conan/bincrafters/public-conan
+        # Conan configuration. `conan config install` installs configuration file from this URL.
+        # See: https://docs.conan.io/en/latest/reference/commands/consumer/config.html#conan-config-install
+        # This is usually a pointer to a Git repo, from which it clones the default branch
+        config_url: git@octocat.dlogics.com:datalogics/conan-config.git
 
         # Conan profile that's used to configure the compiler
         # default is the profile Conan makes in the user's home directory
