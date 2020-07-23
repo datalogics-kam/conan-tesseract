@@ -38,3 +38,7 @@ tmp/
 
 # IDE
 .idea/*
+
+# Virtual environments, pip-tools
+/python-env-*
+requirements.txt
