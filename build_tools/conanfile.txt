@@ -1,6 +1,0 @@
-[build_requires]
-cmake_installer/3.11.3@conan/stable
-
-[generators]
-json
-virtualenv
